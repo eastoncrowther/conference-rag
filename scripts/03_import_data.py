@@ -48,10 +48,19 @@ def load_config():
     return public_config, secrets
 
 
+# Split on the whitespace after . ? or ! (or after one of those plus a closing quote),
+# when a capital (or opening quote + capital) follows. Only the whitespace is consumed.
+# Negative lookbehinds skip initials ("D. Todd") and common abbreviations ("Dr.", "St.").
+SENTENCE_BOUNDARY = re.compile(
+    r'(?:(?<=[.?!])|(?<=[.?!][”"’)]))'
+    r'(?<![\s(][A-Z]\.)(?<!\b(?:Mr|Ms|Dr|St|Jr|Sr)\.)(?<!\bMrs\.)(?<!\bvs\.)'
+    r'\s+(?=[“"‘(]?[A-Z])'
+)
+
+
 def split_into_sentences(text):
-    """Split text into sentences using a simple heuristic."""
-    sentences = re.split(r'\. (?=[A-Z])', text)
-    sentences = [s.strip() + '.' if not s.endswith('.') else s.strip() for s in sentences]
+    """Split text into sentences on terminal punctuation, keeping quotes attached."""
+    sentences = [s.strip() for s in SENTENCE_BOUNDARY.split(text)]
     return [s for s in sentences if len(s) > 20]
 
 
