@@ -418,3 +418,7 @@ enabled = true
 [functions.embed-question]
 # Auth is checked inside the function (see _shared/auth.ts), not at the gateway.
 verify_jwt = false
+
+[functions.generate-answer]
+# Auth is checked inside the function (see _shared/auth.ts), not at the gateway.
+verify_jwt = false

@@ -21,6 +21,13 @@ function isConfigValid() {
     return !isPlaceholderUrl && !isPlaceholderKey;
 }
 
+// RAG relevance gate: only sentences at or above MIN_SIMILARITY are sent to GPT-4o,
+// and we skip the GPT call entirely unless at least MIN_RELEVANT_SENTENCES pass.
+// Calibrated on sample questions: on-topic questions had 5+ sentences >= 0.40,
+// off-topic ones (sports, recipes, coding) had at most 2.
+const MIN_SIMILARITY = 0.40;
+const MIN_RELEVANT_SENTENCES = 3;
+
 // Initialize Supabase client only if config is valid
 let supabaseClient = null;
 let configIsValid = false;
@@ -530,11 +537,20 @@ async function askQuestion() {
         // Step 1: Get embedding
         const embedding = await getEmbedding(question);
 
-        // Step 2: Search for similar sentences
+        // Step 2: Search for similar sentences, keeping only sufficiently relevant ones
         const results = await searchSentences(embedding);
+        const relevant = (results || []).filter(r => r.similarity >= MIN_SIMILARITY);
+
+        if (relevant.length < MIN_RELEVANT_SENTENCES) {
+            const best = results && results.length ? results[0].similarity : 0;
+            showResults('rag', `<div class="no-results">The conference talks don't seem to address this question
+                (best match ${(best * 100).toFixed(0)}% similar; at least ${MIN_RELEVANT_SENTENCES} sentences
+                ≥ ${(MIN_SIMILARITY * 100).toFixed(0)}% are needed). Try rephrasing it.</div>`);
+            return;
+        }
 
         // Step 3: Group by talk (with similarity scores and URLs)
-        const topTalks = groupByTalk(results);
+        const topTalks = groupByTalk(relevant);
 
         // Step 4: Fetch full talk text for richer context
         const enrichedTalks = await fetchFullTalkText(topTalks);

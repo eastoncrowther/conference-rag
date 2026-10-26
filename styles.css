@@ -550,6 +550,10 @@ input:focus {
     animation: slideIn 0.3s ease;
 }
 
+.result-card.rag-answer .result-sentences {
+    white-space: pre-wrap;
+}
+
 .result-card.rag-answer {
     border-color: var(--secondary);
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, var(--background) 100%);
