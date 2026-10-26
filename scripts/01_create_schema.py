@@ -137,6 +137,11 @@ AS $$
   ORDER BY sentence_embeddings.embedding <=> query_embedding
   LIMIT match_count;
 $$;
+
+-- HNSW returns at most ef_search rows (default 40); raise it so RAG can retrieve 100.
+-- The SELECT loads pgvector in this session so hnsw.ef_search is a known setting.
+SELECT '[1]'::vector;
+ALTER FUNCTION match_sentences(vector, int) SET hnsw.ef_search = 100;
 """
 
     url = f"https://api.supabase.com/v1/projects/{SUPABASE_PROJECT_REF}/database/query"

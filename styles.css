@@ -661,6 +661,51 @@ input:focus {
     margin-top: var(--spacing-sm);
 }
 
+/* RAG ranking comparison (new summed ranking vs original average) */
+.ranking-comparison {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--surface);
+    border: 1px solid var(--surface-light);
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.ranking-comparison summary {
+    cursor: pointer;
+}
+
+.ranking-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
+}
+
+.ranking-heading {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.ranking-column ol {
+    margin: var(--spacing-xs) 0 0;
+    padding-left: 1.25rem;
+}
+
+.ranking-column li {
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.ranking-column li.ranking-changed {
+    color: var(--primary);
+}
+
+.ranking-meta {
+    color: var(--text-muted);
+}
+
 .result-error {
     color: var(--error);
     padding: var(--spacing-sm);
